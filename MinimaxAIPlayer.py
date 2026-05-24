@@ -65,5 +65,50 @@ class MinimaxAIPlayer(Player):
                     break
             return best_col, value
         
-    def evaluate_board(self, board, piece):
+    def evaluate_board(self, board, player):
         score = 0
+        grid = board.get_grid()
+        rows = len(grid)
+        cols = len(grid[0])
+        opponent_player = 1 if player == 2 else 2
+
+        #dar prioridade ao centro
+        center_array = [int(grid[i][cols//2]) for i in range(rows)]
+        center_count = center_array.count(player)
+        score += center_count * 3
+
+        for i in range(rows):
+            for j in range(cols-3):
+                window = [int(grid[i][j+k]) for k in range(4)]
+                score += self.evaluate_window(window, player, opponent_player)
+        
+        for i in range(rows-3):
+            for j in range(cols):
+                window = [int(grid[i+k][j]) for k in range(4)]
+                score += self.evaluate_window(window, player, opponent_player)
+        
+        for i in range(rows-3):
+            for j in range(cols-3):
+                window = [int(grid[i+k][j+k]) for k in range(4)]
+                score += self.evaluate_window(window, player, opponent_player)
+
+        for i in range(rows-3):
+            for j in range(cols-3):
+                window = [int(grid[i+3-k][j+k]) for k in range(4)]
+                score += self.evaluate_window(window, player, opponent_player)
+        
+        return score
+    
+    def evaluate_window(self, window, piece, opponent_piece):
+        score = 0
+        if window.count(piece) == 4:
+            score += 100
+        elif window.count(piece) == 3 and window.count(0) == 1:
+            score += 5
+        elif window.count(piece) == 2 and window.count(0) == 2:
+            score += 2
+        
+        if window.count(opponent_piece) == 3 and window.count(0) == 1:
+            score -= 4
+        
+        return score
