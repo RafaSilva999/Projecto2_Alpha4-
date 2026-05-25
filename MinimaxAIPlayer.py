@@ -6,10 +6,10 @@ class MinimaxAIPlayer(Player):
     def __init__(self, piece, max_depth=5):
         self.piece = piece
         self.max_depth = max_depth
-        self.opponent_piece = '1' if piece == '2' else '2'
+        self.opponent_piece = 1 if piece == 2 else 2
 
     def get_move(self, board):
-        valid_moves = board.get_valid_moves(self.piece)
+        valid_moves = board.get_valid_moves()
         if not valid_moves:
             return None
         
@@ -67,7 +67,7 @@ class MinimaxAIPlayer(Player):
         
     def evaluate_board(self, board, player):
         score = 0
-        grid = board.get_grid()
+        grid = board.grid
         rows = len(grid)
         cols = len(grid[0])
         opponent_player = 1 if player == 2 else 2

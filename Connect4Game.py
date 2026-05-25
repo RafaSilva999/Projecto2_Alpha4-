@@ -3,6 +3,7 @@ import pygame
 from Connect4Board import Connect4Board
 from Connect4Gui import Connect4Gui
 from HumanPlayer import HumanPlayer
+from MinimaxAIPlayer import MinimaxAIPlayer
 from RandomPlayer import RandomAIPlayer
 
 
@@ -74,12 +75,13 @@ class Connect4Game:
 # =========================
 
 if __name__ == "__main__":
-    #p1 = HumanPlayer(piece=1)
-    p1 = RandomAIPlayer(piece=1)
-    p2 = RandomAIPlayer(piece=2)
+    p2 = MinimaxAIPlayer(piece=2)
+    p1 = HumanPlayer(piece=1)
+    #p1 = RandomAIPlayer(piece=1)
+    #p2 = RandomAIPlayer(piece=2)
     #p2 = HumanPlayer(piece=2)
     game = Connect4Game()
-    winner = game.run_game(p1, p2, headless= True)
+    winner = game.run_game(p1, p2, headless= False)
     if winner == 0:
         print("Draw!")
     else:
