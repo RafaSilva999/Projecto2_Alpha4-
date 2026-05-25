@@ -3,7 +3,7 @@ import random
 from Player import Player
 
 class MCTSAIPlayer(Player):
-    def __init__(self, piece, max_iterations=500):
+    def __init__(self, piece, max_iterations=1000):
         super().__init__(piece)
         self.max_iterations = max_iterations
         self.opponent_piece = 1 if piece == 2 else 2

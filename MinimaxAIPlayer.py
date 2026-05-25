@@ -3,7 +3,7 @@ import random
 from Player import Player
 
 class MinimaxAIPlayer(Player):
-    def __init__(self, piece, max_depth=4):
+    def __init__(self, piece, max_depth=5):
         self.piece = piece
         self.max_depth = max_depth
         self.opponent_piece = 1 if piece == 2 else 2
