@@ -6,6 +6,7 @@ from HumanPlayer import HumanPlayer
 from MinimaxAIPlayer import MinimaxAIPlayer
 from MCTSAIPlayer import MCTSAIPlayer
 from RandomPlayer import RandomAIPlayer
+import time
 
 
 
@@ -43,7 +44,7 @@ class Connect4Game:
 
                 if board.check_winner(current_player.piece):
                     if(not headless):
-                       gui.update_winner(current_player)
+                        gui.update_winner(current_player)
                     else:
                         print(f"Player {current_player.piece} wins!")
 
@@ -76,16 +77,21 @@ class Connect4Game:
 # =========================
 
 if __name__ == "__main__":
-    p1 = MCTSAIPlayer(piece=1)
-    #p2 = MCTSAIPlayer(piece=2)
+    #p1 = MCTSAIPlayer(piece=1)
+    p2 = MCTSAIPlayer(piece=2)
+    p1 = MinimaxAIPlayer(piece=1)
     #p2 = MinimaxAIPlayer(piece=2)
     #p1 = HumanPlayer(piece=1)
     #p1 = RandomAIPlayer(piece=1)
     #p2 = RandomAIPlayer(piece=2)
-    p2 = HumanPlayer(piece=2)
+    #p1 = HumanPlayer(piece=1)
+    #p2 = HumanPlayer(piece=2)
     game = Connect4Game()
-    winner = game.run_game(p1, p2, headless= False)
+    start_time = time.time()
+    winner = game.run_game(p1, p2, headless= True)
+    end_time = time.time()
     if winner == 0:
         print("Draw!")
     else:
         print(f"Winner is player {winner}")
+    print(f"Game duration: {end_time - start_time:.2f} seconds")
