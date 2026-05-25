@@ -19,41 +19,45 @@ class MCTSAIPlayer(Player):
             node = root
 
             # Seleção
-            while node.is_fully_expanded() and node.children:
-                node = max(node.children, key=lambda n: n.ucb())
+            node = self._select(root)
 
             # Expansão
-            if not node.is_fully_expanded() and not node.is_terminal():
-                move = random.choice(node.untried_moves)
-                new_board = node.board.copy()
-                new_board.drop_piece(move, node.piece)
-                child_piece = 3 - node.piece
-                child_node = MCTSNode(new_board, child_piece, parent=node, move=move)
-                node.children.append(child_node)
-                node.untried_moves.remove(move)
-                node = child_node
+            if not node.is_terminal() and not node.is_fully_expanded():
+                node = self._expand(node)
             #Simulação
-            winner = self._simulate(node.board.copy(), node.piece)
 
-            current = node
-            while current is not None:
-                current.visits += 1
-                parent_piece = 3 - current.piece
-                if winner == parent_piece:
-                    current.wins += 1
-                elif winner == current.piece:
-                    current.wins -= 1
-                current = current.parent
+            reward = self._simulate(node)
+            self._backpropagate(node, reward)
 
         if not root.children:
             return random.choice(board.get_valid_moves())
 
         best_child = max(root.children, key=lambda n: n.visits)
         return best_child.move
-
-    def _simulate(self, board, piece):
-        current_piece = piece
+    
+    def _expand(self, node):
+        move = node.untried_moves[0]  # primeiro por ordem, como na aula
+        new_board = node.board.copy()
+        new_board.drop_piece(move, node.piece)
+        child_piece = 3 - node.piece
+        child_node = MCTSNode(new_board, child_piece, parent=node, move=move)
+        node.children.append(child_node)
+        node.untried_moves.pop(0)
+        return child_node
+    
+    def _select(self, node):
+        while not node.is_terminal():
+            if not node.is_fully_expanded():
+                return node
+            else:
+                node = max(node.children, key=lambda n: n.ucb())
+        return node
+    
+    def _simulate(self, node):
+        board = node.board.copy()
+        current_piece = node.piece
         while True:
+            
             valid_moves = board.get_valid_moves()
             if not valid_moves:
                 return 0  # empate
@@ -62,12 +66,19 @@ class MCTSAIPlayer(Player):
             board.drop_piece(move, current_piece)
 
             if board.check_winner(current_piece):
-                return current_piece
+                return 1 if current_piece == self.piece else 0
 
             if board.is_board_full():
                 return 0
 
             current_piece = 3 - current_piece
+    
+    def _backpropagate(self, node, reward):
+        current = node
+        while current is not None:
+            current.visits += 1
+            current.wins += reward
+            current = current.parent
 
 class MCTSNode:
     def __init__(self, board, piece, parent=None, move=None):
@@ -94,3 +105,12 @@ class MCTSNode:
             self.board.check_winner(2) or
             self.board.is_board_full()
         )
+    def _expand(self, node):
+        move = node.untried_moves[0]
+        new_board = node.board.copy()
+        new_board.drop_piece(move, node.piece)
+        child_piece = 3 - node.piece
+        child_node = MCTSNode(new_board, child_piece, parent=node, move=move)
+        node.children.append(child_node)
+        node.untried_moves.pop(0)
+        return child_node
