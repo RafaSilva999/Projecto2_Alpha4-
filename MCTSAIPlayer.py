@@ -36,7 +36,7 @@ class MCTSAIPlayer(Player):
         return best_child.move
     
     def _expand(self, node):
-        move = node.untried_moves[0]  # primeiro por ordem, como na aula
+        move = node.untried_moves[0]  # primeiro por ordem
         new_board = node.board.copy()
         new_board.drop_piece(move, node.piece)
         child_piece = 3 - node.piece
