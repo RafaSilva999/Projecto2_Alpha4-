@@ -77,12 +77,12 @@ class Connect4Game:
 
 if __name__ == "__main__":
     p1 = MCTSAIPlayer(piece=1)
-    p2 = MCTSAIPlayer(piece=2)
+    #p2 = MCTSAIPlayer(piece=2)
     #p2 = MinimaxAIPlayer(piece=2)
     #p1 = HumanPlayer(piece=1)
     #p1 = RandomAIPlayer(piece=1)
     #p2 = RandomAIPlayer(piece=2)
-    #p2 = HumanPlayer(piece=2)
+    p2 = HumanPlayer(piece=2)
     game = Connect4Game()
     winner = game.run_game(p1, p2, headless= False)
     if winner == 0:

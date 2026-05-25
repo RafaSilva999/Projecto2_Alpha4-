@@ -6,7 +6,21 @@ class MCTSAIPlayer(Player):
     def __init__(self, piece, max_iterations=1000):
         super().__init__(piece)
         self.max_iterations = max_iterations
-        
+        self.opponent_piece = 1 if piece == 2 else 2
+
+    def simulate_random_game(self, board, piece):
+        current_piece = piece
+        while True:
+            if board.check_winner(1):
+                return 1
+            if board.check_winner(2):
+                return 2
+            valid_moves = board.get_valid_moves()
+            if not valid_moves:
+                return 0  # Draw
+            move = random.choice(valid_moves)
+            board.drop_piece(move, current_piece)
+            current_piece = 3 - current_piece  
     
     def get_move(self, board):
         #tenho que implementar o ciclo principal do MCTS e no final retornar um numero inteiro que reprensenta a coluna onde o jogador irá jogar
@@ -25,7 +39,7 @@ class MCTSAIPlayer(Player):
             if not node.is_fully_expanded():
                 move = random.choice(node.untried_moves)
                 new_board = node.board.copy()
-                new_board.make_move(move, node.piece)
+                new_board.drop_piece(move, node.piece)
                 child_node = MCTSNode(new_board, 3 - node.piece, parent=node, move=move)
                 node.children.append(child_node)
                 node.untried_moves.remove(move)
