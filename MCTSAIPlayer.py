@@ -8,19 +8,7 @@ class MCTSAIPlayer(Player):
         self.max_iterations = max_iterations
         self.opponent_piece = 1 if piece == 2 else 2
 
-    def simulate_random_game(self, board, piece):
-        current_piece = piece
-        while True:
-            if board.check_winner(1):
-                return 1
-            if board.check_winner(2):
-                return 2
-            valid_moves = board.get_valid_moves()
-            if not valid_moves:
-                return 0  # Draw
-            move = random.choice(valid_moves)
-            board.drop_piece(move, current_piece)
-            current_piece = 3 - current_piece  
+    
     
     def get_move(self, board):
         #tenho que implementar o ciclo principal do MCTS e no final retornar um numero inteiro que reprensenta a coluna onde o jogador irá jogar
@@ -49,14 +37,27 @@ class MCTSAIPlayer(Player):
             # Backpropagation
             while node is not None:
                 node.visits += 1
-                if winner == self.piece:
+                if winner == node.piece:
                     node.wins += 1
-                elif winner == 3 - self.piece:
+                elif winner != 0:
                     node.wins -= 1
                 node = node.parent
 
         best_child = max(root.children, key=lambda n: n.visits)
         return best_child.move
+    def simulate_random_game(self, board, piece):
+        current_piece = piece
+        while True:
+            if board.check_winner(1):
+                return 1
+            if board.check_winner(2):
+                return 2
+            valid_moves = board.get_valid_moves()
+            if not valid_moves:
+                return 0  # Draw
+            move = random.choice(valid_moves)
+            board.drop_piece(move, current_piece)
+            current_piece = 3 - current_piece  
 
 class MCTSNode:
     def __init__(self, board, piece, parent=None, move=None):
@@ -81,25 +82,3 @@ class MCTSNode:
         return (
             self.board.check_winner(1) or self.board.check_winner(2) or self.board.is_board_full()
         )
-    
-    def best_child(self, c=math.sqrt(2)):
-        return max(self.children, key = lambda child: child.ucb(c))
-    
-    def expand(self):
-        move = self._pick_untried_move()
-        self.untried_moves.remove(move)
-
-        new_board = self.board.copy()
-        new_board.drop_piece(move, self.piece)
-
-        enemy = 2 if self.piece == 1 else 1
-        child = MCTSNode(new_board, enemy, parent=self, move=move)
-        self.children.append(child)
-        return child
-    
-    def _pick_untried_move(self):
-        cols = self.board.cols
-        center = cols // 2
-        order = sorted(self.untried_moves, key = lambda c: abs(c- center))
-        candidatos = order[:min(3, len(order))]
-        return random.choice(candidatos)
