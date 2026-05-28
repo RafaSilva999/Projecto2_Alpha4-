@@ -109,7 +109,7 @@ class MCTSNode:
         self.visits = 0
         self.untried_moves = board.get_valid_moves()
 
-    def ucb(self, c=2.0):
+    def ucb(self, c=math.sqrt(2.0)):
         if self.visits == 0:
             return float('inf')
         return (self.wins / self.visits) + c * math.sqrt(math.log(self.parent.visits) / self.visits)
